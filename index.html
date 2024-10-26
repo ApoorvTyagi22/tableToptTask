@@ -1,23 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Garage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luxury Garage</title>
+    <link rel="stylesheet" href="./src/css/style.css" />
   </head>
   <body>
-    <h1>Garage</h1>
+    <header class="header">
+      <h1>Luxury Garage</h1>
+    </header>
+    <div class="allcontain">
+      <div id="carousel-up" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner" role="listbox">
+          <div class="item">
+            <img src="image/porche.jpg" alt="Porsche" />
+            <div class="carousel-caption">
+              <h2>Porsche</h2>
+              <p>
+                Experience unparalleled performance and style.<br />
+                Precision engineering meets timeless design.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h1>Featured Vehicles</h1>
+      <div id="car-info">
+        <!-- Cars will be displayed here -->
+      </div>
+    </div>
     <form id="new-vehicle-form">
       <h2>Add New Vehicle</h2>
       <div class="form-group">
         <label for="reg">Registration:</label>
         <input type="text" id="reg" name="reg" required />
       </div>
-
       <button type="submit">Add Vehicle</button>
     </form>
-    <div id="car-info">
-      <!-- Cars will be displayed here -->
-    </div>
     <script src="src/js/garage.js" type="module"></script>
     <script src="src/js/src.js" type="module"></script>
     <script src="src/js/main.js" type="module"></script>

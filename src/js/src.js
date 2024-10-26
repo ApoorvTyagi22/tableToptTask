@@ -5,6 +5,7 @@ function start() {
   console.log("Garage Loaded");
 }
 async function fetchCarFromReg(reg) {
+  console.log("Fetching car from reg:", reg);
   try {
     const apiUrl = "http://localhost:3000/proxy/vehicle-enquiry";
     const payload = {
@@ -47,6 +48,7 @@ async function fetchCarFromReg(reg) {
 window.addEventListener("load", () => {
   // Initialize and fetch all cars when the page loads
   console.log("Garage loaded");
-  Garage.fetchAllCars(); // Fetch all cars and display them
+  Garage.initForm(); // Initialize theq form
+  // Garage.fetchAndDisplayCars(); // Fetch all cars and display them
 });
 export { fetchCarFromReg };

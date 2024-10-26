@@ -8,14 +8,14 @@ const garageLoadedEvent = new Event("garage-loaded");
 function init() {
   garage.delete("DR13NGH");
   const cars = [
-    // { reg: "AA19 PPP" }, // does not exist
+    { reg: "AA19 PPP" }, // does not exist
     {}, // does not exist
-    //  { reg: "ER19BAD" }, // does not exist
-    //  { reg: "ER19 NFD" }, // does not exist
-    //  { reg: "L2WPS" }, // does not exist
-    //  { reg: "AA19 SRN" }, // does not exist
-    //  { rag: "AA19 SRN" }, // does not exist
-    //  { reg: "TE57VRN" }, // does not exist
+    { reg: "ER19BAD" }, // does not exist
+    { reg: "ER19 NFD" }, // does not exist
+    { reg: "L2WPS" }, // does not exist
+    { reg: "AA19 SRN" }, // does not exist
+    { rag: "AA19 SRN" }, // does not exist
+    { reg: "TE57VRN" }, // does not exist
   ];
   cars.forEach((car) => {
     garage.add(car.reg);

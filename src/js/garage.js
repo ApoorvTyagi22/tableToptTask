@@ -1,13 +1,14 @@
 import { fetchCarFromReg } from "./src.js";
+//import { picture } from "./../../image/car6.jpg";
 const garage = {
   count: 1,
   cars: [
-    //  { reg: "AA19AAA" },
-    //  { reg: "AA19EEE" },
-    //  { reg: "HT24VNA" },
-    //  { reg: "SG55FET" },
-    //  { reg: "LF08EHV" },
-    //  { reg: "RD23EYE" },
+    { reg: "AA19AAA" },
+    { reg: "AA19EEE" },
+    { reg: "HT24VNA" },
+    { reg: "SG55FET" },
+    { reg: "LF08EHV" },
+    { reg: "RD23EYE" },
     // { reg: "KX69GZS" },
   ],
 };
@@ -19,15 +20,21 @@ const carsToDisplay = [];
 const Garage = {
   initForm() {
     const form = document.getElementById("new-vehicle-form");
+    if (form == null) {
+      console.error("Form not found");
+      return;
+    }
     form.addEventListener("submit", this.handleFormSubmit.bind(this));
   },
 
   handleFormSubmit(event) {
-    console.log(event);
+    event.preventDefault();
+    // console.log(event);
     const formData = new FormData(event.target);
     const newCar = {
       reg: formData.get("reg"),
     };
+    console.log(newCar.reg);
     this.add(newCar.reg);
   },
   isValidRegPlate(reg) {
@@ -46,7 +53,7 @@ const Garage = {
   add(reg) {
     reg = this.formatRegPlate(reg);
     if (!this.isValidRegPlate(reg)) {
-      console.log("Invalid registration plate");
+      console.log("Invalid registration plate", reg);
       return false;
     }
     // Check if car already exists
@@ -100,8 +107,7 @@ const Garage = {
   },
 
   async fetchAndDisplayCars(carsToFetch = garage.cars) {
-    carsToDisplay.length = 0;
-    const uniqueRegs = new Set();
+    const uniqueRegs = new Set(carsToDisplay.map((car) => car.reg));
 
     // Only process unique registrations
     for (const car of carsToFetch) {
@@ -110,7 +116,7 @@ const Garage = {
         uniqueRegs.add(formattedReg);
         const carInfo = await this.fetchCarDetails(formattedReg);
         if (!carInfo.error) {
-          carsToDisplay.push(carInfo);
+          carsToDisplay.push(carInfo); // Only add new car data
         }
       }
     }
@@ -119,12 +125,22 @@ const Garage = {
   },
 
   displayCars() {
+    console.log("Displaying cars:", carsToDisplay); // Check how often this is called
+
     const carInfoDiv = document.getElementById("car-info");
-    carInfoDiv.innerHTML = ""; // Clear previous content
+
+    if (carInfoDiv != null) {
+      carInfoDiv.innerHTML = "";
+    } // Clear previous content
 
     carsToDisplay.forEach((car) => {
       const carElement = document.createElement("div");
       carElement.className = "car";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "delete-btn";
+      deleteButton.innerHTML = "×";
+      deleteButton.addEventListener("click", () => this.handleDelete(car.reg));
 
       const icon = document.createElement("i");
       icon.className = car.error
@@ -146,10 +162,24 @@ const Garage = {
         `;
       }
 
+      // const carImage = document.createElement("img");
+      // carImage.className = "car-image";
+      // carImage.src = picture;
+      // carImage.alt = `${car.make} image`;
+
+      carElement.appendChild(deleteButton);
       carElement.appendChild(icon);
       carElement.appendChild(contentDiv);
-      carInfoDiv.appendChild(carElement);
+      //carElement.appendChild(carImage); // Add image to the right side
+      if (carInfoDiv != null) {
+        carInfoDiv.appendChild(carElement);
+      }
     });
+  },
+
+  handleDelete(reg) {
+    console.log("Deleting car with reg ", reg);
+    this.delete(reg);
   },
 
   delete(reg) {
@@ -159,6 +189,7 @@ const Garage = {
     );
     if (index !== -1) {
       garage.cars.splice(index, 1);
+      carsToDisplay.splice(index, 1);
       garage.count--;
       // Remove from cache
       carDetailsCache.delete(formattedReg);
