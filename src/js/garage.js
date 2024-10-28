@@ -1,5 +1,5 @@
 import { fetchCarFromReg } from "./src.js";
-//import { picture } from "./../../image/car6.jpg";
+
 const garage = {
   count: 1,
   cars: [
@@ -27,21 +27,60 @@ const Garage = {
     form.addEventListener("submit", this.handleFormSubmit.bind(this));
   },
 
-  handleFormSubmit(event) {
+  async handleFormSubmit(event) {
     event.preventDefault();
-    // console.log(event);
     const formData = new FormData(event.target);
-    const newCar = {
-      reg: formData.get("reg"),
-    };
-    console.log(newCar.reg);
-    this.add(newCar.reg);
+    const reg = formData.get("reg");
+
+    if (!this.isValidRegPlate(reg)) {
+      this.displayMessage(
+        "Invalid registration number format. It should be 2 letters, 2 numbers, then 3 letters (e.g., AB12CDE).",
+        "error"
+      );
+      return;
+    }
+
+    const carExists = await this.fetchCarDetails(reg);
+    if (carExists.error) {
+      this.displayMessage(
+        `Registration number ${reg} does not exist.`,
+        "error"
+      );
+      return;
+    }
+
+    if (this.add(reg)) {
+      this.displayMessage(
+        `Vehicle with registration ${reg} added successfully.`,
+        "success"
+      );
+      event.target.reset(); // Clear the form
+    } else {
+      this.displayMessage(
+        `Vehicle with registration ${reg} already exists.`,
+        "error"
+      );
+    }
   },
+
+  displayMessage(message, type) {
+    const messageElement = document.createElement("div");
+    messageElement.textContent = message;
+    messageElement.className = `message ${type}`;
+
+    const form = document.getElementById("new-vehicle-form");
+    form.appendChild(messageElement);
+
+    // Remove the message after 5 seconds
+    setTimeout(() => {
+      messageElement.remove();
+    }, 15000);
+  },
+
   isValidRegPlate(reg) {
     const regPattern = /^[A-Z]{2}[0-9]{2}\s?[A-Z]{3}$/;
     return regPattern.test(this.formatRegPlate(reg));
   },
-
   formatRegPlate(reg) {
     if (typeof reg !== "string") {
       console.log("Invalid input: registration plate must be a string: ", reg);
@@ -98,10 +137,12 @@ const Garage = {
       const errorInfo = {
         error: error.message || "Failed to fetch data",
         reg: formattedReg,
+        status: 404,
       };
       // Cache errors too to prevent repeated failed requests
       carDetailsCache.set(formattedReg, errorInfo);
       console.error(`Failed to fetch data for ${formattedReg}:`, error);
+      console.log("ErrorMessage: ", errorInfo);
       return errorInfo;
     }
   },
@@ -117,6 +158,8 @@ const Garage = {
         const carInfo = await this.fetchCarDetails(formattedReg);
         if (!carInfo.error) {
           carsToDisplay.push(carInfo); // Only add new car data
+        } else if (carInfo.error.status === 404) {
+          return carInfo;
         }
       }
     }
@@ -126,6 +169,16 @@ const Garage = {
 
   displayCars() {
     console.log("Displaying cars:", carsToDisplay); // Check how often this is called
+    const carImages = [
+      "/image/car1.jpg",
+      "/image/car2.jpg",
+      "/image/car3.jpg",
+      "/image/car4.jpg",
+      "/image/car5.jpg",
+      "/image/car6.jpg",
+      "/image/car7.jpg",
+      "/image/car8.jpg",
+    ];
 
     const carInfoDiv = document.getElementById("car-info");
 
@@ -162,15 +215,16 @@ const Garage = {
         `;
       }
 
-      // const carImage = document.createElement("img");
-      // carImage.className = "car-image";
-      // carImage.src = picture;
-      // carImage.alt = `${car.make} image`;
+      const carImage = document.createElement("img");
+      carImage.className = "car-image";
+      const randomIndex = Math.floor(Math.random() * carImages.length);
+      carImage.src = carImages[randomIndex]; // Updated path
+      carImage.alt = `${car.make} image`;
 
       carElement.appendChild(deleteButton);
       carElement.appendChild(icon);
       carElement.appendChild(contentDiv);
-      //carElement.appendChild(carImage); // Add image to the right side
+      carElement.appendChild(carImage); // Add image to the right side
       if (carInfoDiv != null) {
         carInfoDiv.appendChild(carElement);
       }
@@ -179,24 +233,32 @@ const Garage = {
 
   handleDelete(reg) {
     console.log("Deleting car with reg ", reg);
-    this.delete(reg);
+    if (this.delete(reg)) {
+      this.displayCars(); // Only update display if deletion was successful
+    }
   },
 
   delete(reg) {
     const formattedReg = this.formatRegPlate(reg);
-    const index = garage.cars.findIndex(
+
+    const garageIndex = garage.cars.findIndex(
       (car) => this.formatRegPlate(car.reg) === formattedReg
     );
-    if (index !== -1) {
-      garage.cars.splice(index, 1);
-      carsToDisplay.splice(index, 1);
+
+    const displayIndex = carsToDisplay.findIndex(
+      (car) => this.formatRegPlate(car.reg) === formattedReg
+    );
+
+    if (garageIndex !== -1 && displayIndex !== -1) {
+      garage.cars.splice(garageIndex, 1);
+      carsToDisplay.splice(displayIndex, 1);
       garage.count--;
-      // Remove from cache
+
       carDetailsCache.delete(formattedReg);
       console.log("Car deleted with reg ", reg);
-      this.fetchAndDisplayCars();
       return true;
     }
+
     console.log("Car not found with reg ", reg);
     return false;
   },

@@ -49,6 +49,6 @@ window.addEventListener("load", () => {
   // Initialize and fetch all cars when the page loads
   console.log("Garage loaded");
   Garage.initForm(); // Initialize theq form
-  // Garage.fetchAndDisplayCars(); // Fetch all cars and display them
+  Garage.fetchAndDisplayCars(); // Fetch all cars and display them
 });
 export { fetchCarFromReg };

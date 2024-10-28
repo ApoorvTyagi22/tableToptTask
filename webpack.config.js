@@ -17,7 +17,7 @@ module.exports = {
   },
   devServer: {
     static: {
-      directory: path.resolve(__dirname, "dist"),
+      directory: path.resolve(__dirname, "src"),
     },
     client: {
       overlay: {
@@ -32,6 +32,9 @@ module.exports = {
     rules: [
       {
         test: /\.(jpeg|jpg|png|gif|svg|ico)/,
+        generator: {
+          filename: "images/[name][ext]",
+        },
         include: [path.join(__dirname, "images")],
         exclude: [path.resolve(__dirname, "node_modules")],
         use: {
