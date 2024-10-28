@@ -18,6 +18,7 @@ const carDetailsCache = new Map();
 const carsToDisplay = [];
 
 const Garage = {
+  // Initialize the form
   initForm() {
     const form = document.getElementById("new-vehicle-form");
     if (form == null) {
@@ -26,6 +27,7 @@ const Garage = {
     }
     form.addEventListener("submit", this.handleFormSubmit.bind(this));
   },
+  // Handle form submission
   async handleFormSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -64,6 +66,7 @@ const Garage = {
       );
     }
   },
+  // Display a message on the form
   displayMessage(message, type) {
     const messageElement = document.createElement("div");
     messageElement.textContent = message;
@@ -77,10 +80,12 @@ const Garage = {
       messageElement.remove();
     }, 5000);
   },
+  // Check if the registration plate is valid
   isValidRegPlate(reg) {
     const regPattern = /^[A-Z]{2}[0-9]{2}\s?[A-Z]{3}$/;
     return regPattern.test(this.formatRegPlate(reg));
   },
+  // Format the registration plate
   formatRegPlate(reg) {
     if (typeof reg !== "string") {
       console.log("Invalid input: registration plate must be a string: ", reg);
@@ -88,6 +93,7 @@ const Garage = {
     }
     return reg.replace(/\s/g, "").toUpperCase();
   },
+  // Add a new car to the garage
   add(reg) {
     reg = this.formatRegPlate(reg);
     if (!this.isValidRegPlate(reg)) {
@@ -105,6 +111,7 @@ const Garage = {
     }
     return true;
   },
+  // Fetch car details from the API
   async get(reg) {
     const formattedReg = this.formatRegPlate(reg);
 
@@ -143,6 +150,7 @@ const Garage = {
       return errorInfo;
     }
   },
+  // Fetch and display cars
   async fetchAndDisplayCars(carsToFetch = garage.cars) {
     const uniqueRegs = new Set(carsToDisplay.map((car) => car.reg));
 
@@ -162,6 +170,7 @@ const Garage = {
 
     this.displayCars();
   },
+  // Display cars
   displayCars() {
     console.log("Displaying cars:", carsToDisplay); // Check how often this is called
     const carImages = [
@@ -225,12 +234,14 @@ const Garage = {
       }
     });
   },
+  // Handle car deletion
   handleDelete(reg) {
     console.log("Deleting car with reg ", reg);
     if (this.delete(reg)) {
       this.displayCars(); // Only update display if deletion was successful
     }
   },
+  // Delete a car from the garage
   delete(reg) {
     const formattedReg = this.formatRegPlate(reg);
 

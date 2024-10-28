@@ -4,6 +4,8 @@ window.addEventListener("garage-loaded", start, false);
 function start() {
   console.log("Garage Loaded");
 }
+
+// Function to fetch car details from the proxy server
 async function fetchCarFromReg(reg) {
   console.log("Fetching car from reg:", reg);
   try {
