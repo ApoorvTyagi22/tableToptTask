@@ -31,7 +31,6 @@ app.post("/proxy/vehicle-enquiry", async (req, res) => {
       req.body
     );
 
-    // Send appropriate error response
     const statusCode = error.response ? error.response.status : 500;
     const errorMessage = error.response ? error.response.data : error.message;
 

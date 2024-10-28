@@ -5,6 +5,9 @@ body {
   padding: 0;
   background-color: #f8f9fa;
   color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .header {
@@ -19,6 +22,10 @@ body {
   font-size: 2rem;
   font-weight: 600;
   letter-spacing: 2px;
+}
+
+main {
+  flex: 1;
 }
 
 .allcontain {
@@ -66,15 +73,21 @@ body {
   margin: 0;
 }
 
-.main-content {
+#about-us,
+#featured-vehicles,
+#add-vehicle {
   max-width: 1200px;
-  margin: 1rem auto;
-  padding: 0 1rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.featured-vehicles h2,
-.add-vehicle h2 {
-  font-size: 1.5rem;
+#about-us h2,
+#featured-vehicles h2,
+#add-vehicle h2 {
+  font-size: 1.8rem;
   color: #333;
   margin-bottom: 1rem;
 }
@@ -136,7 +149,6 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
-  margin-top: 2rem;
 }
 
 .form-group {
@@ -167,11 +179,33 @@ button[type="submit"] {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 100%;
 }
 
 button[type="submit"]:hover {
   background-color: #45a049;
+}
+
+#contact-us {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+#contact-us h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+#contact-us p {
+  margin-bottom: 0.5rem;
 }
 
 @media (min-width: 768px) {
@@ -187,8 +221,9 @@ button[type="submit"]:hover {
     font-size: 1rem;
   }
 
-  .featured-vehicles h2,
-  .add-vehicle h2 {
+  #about-us h2,
+  #featured-vehicles h2,
+  #add-vehicle h2 {
     font-size: 2rem;
   }
 

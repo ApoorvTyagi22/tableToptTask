@@ -9,7 +9,7 @@ const garage = {
     { reg: "SG55FET" },
     { reg: "LF08EHV" },
     { reg: "RD23EYE" },
-    // { reg: "KX69GZS" },
+    { reg: "KX69GZS" },
   ],
 };
 
@@ -26,22 +26,23 @@ const Garage = {
     }
     form.addEventListener("submit", this.handleFormSubmit.bind(this));
   },
-
   async handleFormSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const reg = formData.get("reg");
+    const newReg = this.formatRegPlate(reg);
 
-    if (!this.isValidRegPlate(reg)) {
+    if (!this.isValidRegPlate(newReg)) {
       this.displayMessage(
-        "Invalid registration number format. It should be 2 letters, 2 numbers, then 3 letters (e.g., AB12CDE).",
+        "Invalid registration number format. It should be 2 letters then 2 numbers, then 3 letters (e.g., AB12CDE).",
         "error"
       );
       return;
     }
 
-    const carExists = await this.fetchCarDetails(reg);
-    if (carExists.error) {
+    const carFetched = await this.get(newReg); // Check if car exists
+    if (carFetched.error) {
+      // Display error message if car does not exist
       this.displayMessage(
         `Registration number ${reg} does not exist.`,
         "error"
@@ -49,12 +50,13 @@ const Garage = {
       return;
     }
 
-    if (this.add(reg)) {
+    // Add car if it does not already exist
+    if (this.add(newReg)) {
       this.displayMessage(
         `Vehicle with registration ${reg} added successfully.`,
         "success"
       );
-      event.target.reset(); // Clear the form
+      event.target.reset();
     } else {
       this.displayMessage(
         `Vehicle with registration ${reg} already exists.`,
@@ -62,7 +64,6 @@ const Garage = {
       );
     }
   },
-
   displayMessage(message, type) {
     const messageElement = document.createElement("div");
     messageElement.textContent = message;
@@ -74,9 +75,8 @@ const Garage = {
     // Remove the message after 5 seconds
     setTimeout(() => {
       messageElement.remove();
-    }, 15000);
+    }, 5000);
   },
-
   isValidRegPlate(reg) {
     const regPattern = /^[A-Z]{2}[0-9]{2}\s?[A-Z]{3}$/;
     return regPattern.test(this.formatRegPlate(reg));
@@ -88,7 +88,6 @@ const Garage = {
     }
     return reg.replace(/\s/g, "").toUpperCase();
   },
-
   add(reg) {
     reg = this.formatRegPlate(reg);
     if (!this.isValidRegPlate(reg)) {
@@ -106,8 +105,7 @@ const Garage = {
     }
     return true;
   },
-
-  async fetchCarDetails(reg) {
+  async get(reg) {
     const formattedReg = this.formatRegPlate(reg);
 
     // Check cache first
@@ -129,7 +127,6 @@ const Garage = {
         reg: formattedReg,
         image: returnedBody.image,
       };
-      // Store in cache
       carDetailsCache.set(formattedReg, carInfo);
       console.log("Car details fetched and cached for reg ", formattedReg);
       return carInfo;
@@ -146,7 +143,6 @@ const Garage = {
       return errorInfo;
     }
   },
-
   async fetchAndDisplayCars(carsToFetch = garage.cars) {
     const uniqueRegs = new Set(carsToDisplay.map((car) => car.reg));
 
@@ -155,7 +151,7 @@ const Garage = {
       const formattedReg = this.formatRegPlate(car.reg);
       if (!uniqueRegs.has(formattedReg)) {
         uniqueRegs.add(formattedReg);
-        const carInfo = await this.fetchCarDetails(formattedReg);
+        const carInfo = await this.get(formattedReg);
         if (!carInfo.error) {
           carsToDisplay.push(carInfo); // Only add new car data
         } else if (carInfo.error.status === 404) {
@@ -166,7 +162,6 @@ const Garage = {
 
     this.displayCars();
   },
-
   displayCars() {
     console.log("Displaying cars:", carsToDisplay); // Check how often this is called
     const carImages = [
@@ -230,14 +225,12 @@ const Garage = {
       }
     });
   },
-
   handleDelete(reg) {
     console.log("Deleting car with reg ", reg);
     if (this.delete(reg)) {
       this.displayCars(); // Only update display if deletion was successful
     }
   },
-
   delete(reg) {
     const formattedReg = this.formatRegPlate(reg);
 
@@ -259,20 +252,8 @@ const Garage = {
       return true;
     }
 
-    console.log("Car not found with reg ", reg);
+    console.log("Car not found with reg in the garage", reg);
     return false;
-  },
-
-  get(reg) {
-    const formattedReg = this.formatRegPlate(reg);
-    const car = garage.cars.find(
-      (car) => this.formatRegPlate(car.reg) === formattedReg
-    );
-    if (car) {
-      return car;
-    }
-    console.log("Car not found with reg ", reg);
-    return null;
   },
 };
 
